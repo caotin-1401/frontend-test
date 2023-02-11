@@ -1,0 +1,31 @@
+{
+    "name": "frontend-test",
+    "version": "1.0.0",
+    "description": "test frontend",
+    "main": "server.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "nodemon --exec babel-node src/server.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/caotin-1401/frontend-test.git"
+    },
+    "author": "Cao Van Tin",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/caotin-1401/frontend-test/issues"
+    },
+    "homepage": "https://github.com/caotin-1401/frontend-test#readme",
+    "dependencies": {
+        "@babel/core": "^7.20.12",
+        "@babel/node": "^7.20.7",
+        "@babel/preset-env": "^7.20.2",
+        "body-parser": "^1.20.1",
+        "cookie-parser": "^1.4.6",
+        "dotenv": "^16.0.3",
+        "ejs": "^3.1.8",
+        "express": "^4.18.2",
+        "nodemon": "^2.0.20"
+    }
+}
