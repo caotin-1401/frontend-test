@@ -27,53 +27,120 @@ const dataFinish = [
         content: `"That's all the jokes for today! Come back another day!"`,
     },
 ];
+var db = {
+    like: [],
+    unlike: [],
+};
+
 var list_id = [];
 var isClean = false;
+var dataDisplay = dataFinish;
 let initRoutes = (app) => {
     router.get('/', (req, res) => {
-        if (isClean === true) {
-            list_id = [];
-            isClean = false;
+        try {
+            // if (isClean === true) {
+            //     list_id = [];
+            //     isClean = false;
+            // }
+            let current_data;
+            let isFinish = false;
+            let ramdom = Math.floor(Math.random() * 4) + 1;
+            if (req.cookies.test) {
+                [...current_data] = req.cookies.test.split('.');
+                list_id = current_data.map((item) => +item);
+            } else {
+                list_id = [];
+                db = {
+                    like: [],
+                    unlike: [],
+                };
+            }
+            if (list_id && list_id.length > 0) {
+                if (list_id.length !== 4) {
+                    while (list_id.some((x) => x === ramdom)) {
+                        ramdom = Math.floor(Math.random() * 4) + 1;
+                    }
+                } else isFinish = true;
+            }
+            let new_data = data.filter((item) => item.id === ramdom);
+            isFinish === false ? (dataDisplay = new_data) : (dataDisplay = dataFinish);
+            return res.render('index', {
+                dataDisplay,
+            });
+        } catch (e) {
+            console.log(e);
         }
-        let list_data_cookie, dataDisplay, current_data, current_data_number;
-        let isFinish = false;
+        return res.render('index');
+    });
 
-        let ramdom = Math.floor(Math.random() * 4) + 1;
+    // router.post('/clean', (req, res) => {
+    //     isClean = true;
+    //     res.clearCookie('test');
+    //     return res.redirect('/');
+    // });
+
+    router.post('/like', (req, res, next) => {
+        // if (isClean === true) {
+        //     list_id = [];
+        //     isClean = false;
+        // }
+        let current_data;
 
         if (req.cookies.test) {
-            list_data_cookie = req.cookies.test;
-            [...current_data] = list_data_cookie.split('.');
-            current_data_number = current_data.map((item) => +item);
-            list_id = current_data_number;
+            [...current_data] = req.cookies.test.split('.');
+            list_id = current_data.map((item) => +item);
+        } else {
+            list_id = [];
+            db = {
+                like: [],
+                unlike: [],
+            };
         }
-
         if (list_id && list_id.length > 0) {
             if (list_id.length !== 4) {
-                while (list_id.some((x) => x === ramdom)) {
-                    ramdom = Math.floor(Math.random() * 4) + 1;
-                }
-                list_id.push(ramdom);
-            } else isFinish = true;
-        } else list_id.push(ramdom);
+                list_id.push(dataDisplay[0].id);
+                db && db.like.push(dataDisplay[0]);
+            }
+        } else {
+            list_id.push(dataDisplay[0].id);
+            db && db.like.push(dataDisplay[0]);
+        }
+        let text = list_id.join('.');
+        console.log(db);
+        res.cookie('test', text);
+        return res.redirect('/');
+    });
 
-        let new_data = data.filter((item, index) => item.id === ramdom);
-        isFinish === false ? (dataDisplay = new_data) : (dataDisplay = dataFinish);
+    router.post('/unlike', (req, res) => {
+        // if (isClean === true) {
+        //     list_id = [];
+        //     isClean = false;
+        // }
+        let current_data;
+
+        if (req.cookies.test) {
+            [...current_data] = req.cookies.test.split('.');
+            list_id = current_data.map((item) => +item);
+        } else {
+            list_id = [];
+            db = {
+                like: [],
+                unlike: [],
+            };
+        }
+        if (list_id && list_id.length > 0) {
+            if (list_id.length !== 4) {
+                list_id.push(dataDisplay[0].id);
+                db && db.unlike.push(dataDisplay[0]);
+            }
+        } else {
+            list_id.push(dataDisplay[0].id);
+            db && db.unlike.push(dataDisplay[0]);
+        }
+        console.log(db);
         let text = list_id.join('.');
         res.cookie('test', text);
-        res.render('index', {
-            dataDisplay,
-        });
-    });
-    router.post('/clean', (req, res) => {
-        let ramdom = Math.floor(Math.random() * 4) + 1;
-        let dataDisplay = data.filter((item, index) => item.id === ramdom);
-        isClean = true;
-        res.clearCookie('test');
-        res.render('index', {
-            dataDisplay,
-        });
-
-        res.redirect('/');
+        return res.redirect('/');
     });
     return app.use('/', router);
 };
